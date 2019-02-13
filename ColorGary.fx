@@ -25,6 +25,7 @@ float Script : STANDARDSGLOBAL <
 float4 MaterialDiffuse : DIFFUSE  < string Object = "Geometry"; >;
 static float alpha1 = MaterialDiffuse.a;
 
+float Transparent : CONTROLOBJECT < string name = "(self)"; string item = "Tr"; >;
 float scaling0 : CONTROLOBJECT < string name = "(self)"; >;
 static float scaling = scaling0 * 0.1;
 
@@ -71,8 +72,10 @@ VS_OUTPUT VS_passDraw( float4 Pos : POSITION, float4 Tex : TEXCOORD0 ) {
 }
 
 float4 PS_ColorShift( float2 Tex: TEXCOORD0 ) : COLOR {   
-    float Color = tex2D( ScnSamp, Tex ).r*0.3+tex2D( ScnSamp, Tex ).g*0.59+tex2D( ScnSamp, Tex ).b*0.11;
-    return float4(Color,Color,Color,1);
+    float4 ScnColor=tex2D( ScnSamp, Tex );
+    float ColorSamp = tex2D( ScnSamp, Tex ).r*0.3+tex2D( ScnSamp, Tex ).g*0.59+tex2D( ScnSamp, Tex ).b*0.11;
+    float4 Color= ColorSamp*Transparent+ScnColor*(1-Transparent);
+	return Color;
 }
 
 technique ColorShift <
